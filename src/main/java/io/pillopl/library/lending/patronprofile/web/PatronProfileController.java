@@ -15,9 +15,6 @@ import io.pillopl.library.lending.patronprofile.model.PatronProfiles;
 import io.vavr.Predicates;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.springframework.hateoas.CollectionModel;
@@ -31,6 +28,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -65,8 +65,10 @@ class PatronProfileController {
                 .toStream()
                 .map(hold -> resourceWithLinkToHoldSelf(patronId, hold))
                 .collect(toList());
-        return ResponseEntity.ok(new CollectionModel<>(holds, linkTo(methodOn(PatronProfileController.class).findHolds(patronId)).withSelfRel()));
-
+        return ResponseEntity.ok(CollectionModel.of(
+                holds,
+                linkTo(methodOn(PatronProfileController.class).findHolds(patronId)).withSelfRel())
+        );
     }
 
     @GetMapping("/profiles/{patronId}/holds/{bookId}")
@@ -86,7 +88,9 @@ class PatronProfileController {
                 .toStream()
                 .map(checkout -> resourceWithLinkToCheckoutSelf(patronId, checkout))
                 .collect(toList());
-        return ResponseEntity.ok(new CollectionModel<>(checkouts, linkTo(methodOn(PatronProfileController.class).findHolds(patronId)).withSelfRel()));
+        return ResponseEntity.ok(CollectionModel.of(
+                checkouts,
+                List.of(linkTo(methodOn(PatronProfileController.class).findHolds(patronId)).withSelfRel())));
     }
 
     @GetMapping("/profiles/{patronId}/checkouts/{bookId}")
@@ -123,7 +127,7 @@ class PatronProfileController {
     }
 
     private EntityModel<Hold> resourceWithLinkToHoldSelf(UUID patronId, io.pillopl.library.lending.patronprofile.model.Hold hold) {
-        return new EntityModel<>(
+        return EntityModel.of(
                 new Hold(hold),
                 linkTo(methodOn(PatronProfileController.class).findHold(patronId, hold.getBook().getBookId()))
                         .withSelfRel()
@@ -132,7 +136,7 @@ class PatronProfileController {
     }
 
     private EntityModel<Checkout> resourceWithLinkToCheckoutSelf(UUID patronId, io.pillopl.library.lending.patronprofile.model.Checkout checkout) {
-        return new EntityModel<>(
+        return EntityModel.of(
                 new Checkout(checkout),
                 linkTo(methodOn(PatronProfileController.class).findCheckout(patronId, checkout.getBook().getBookId()))
                         .withSelfRel());
