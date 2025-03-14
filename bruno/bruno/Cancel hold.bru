@@ -1,0 +1,11 @@
+meta {
+  name: Cancel hold
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/profiles/{{patronId}}/holds/{{bookId}}
+  body: none
+  auth: none
+}

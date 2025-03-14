@@ -1,0 +1,19 @@
+meta {
+  name: Place on hold
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/profiles/{{patronId}}/holds/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "bookId": "{{bookId}}",
+    "libraryBranchId": "{{libraryBranchId}}",
+    "numberOfDays": 7
+  }
+}
